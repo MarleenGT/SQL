@@ -27,24 +27,23 @@ select filialea.nom nom, filialea.prenom prenom from filialea left outer join fi
     where filialea.idpersonnes is null;  
 
 -- Q7
-select nom, prenom, ifnull(nom_service, '---') service from filialea left join services 
-    on filialea.numService = services.idservice
-    union select nom, prenom, ifnull(nom_service, '---') from filialeb left join services 
-    on filialeb.numService = services.idservice;  
+select distinct nom, prenom, ifnull(nom_service, '---') service from
+    (select * from filialea union select * from filialeb) as ent
+    left join services
+    on ent.numService = services.idservice;  
 
 -- Q8
-select concat(prenom, '.', upper(substring(nom,1,1))) Nom, ifnull(matricule, '---') matricule from filialea left join voitures 
-    on filialea.numVoiture = voitures.idVoitures
-    union select concat(prenom, '.', upper(substring(nom,1,1))), ifnull(matricule, '---') from filialeb left join voitures 
-    on filialeb.numVoiture = voitures.idVoitures;
+select distinct concat(prenom, '.', upper(substring(nom,1,1))) Nom, ifnull(matricule, '---') matricule from 
+    (select * from filialea union select * from filialeb) as ent
+    left join voitures 
+    on ent.numVoiture = voitures.idVoitures;
 
 -- Q9
-select concat(upper(substring(prenom,1,1)), '.', nom) Nom, ifnull(nom_service, '---') service, ifnull(matricule, '---') matricule from filialea left join voitures 
-    on filialea.numVoiture = voitures.idVoitures left join services
-    on filialea.numService = services.idservice
-    union select concat(upper(substring(prenom,1,1)), '.', nom), ifnull(nom_service, '---'), ifnull(matricule, '---') from filialeb left join voitures 
-    on filialeb.numVoiture = voitures.idVoitures left join services
-    on filialeb.numService = services.idservice;
+select distinct concat(upper(substring(prenom,1,1)), '.',nom) Nom, ifnull(nom_service, '---') service, ifnull(matricule, '---') matricule from 
+    (select * from filialea union select * from filialeb) as ent
+    left join voitures 
+    on ent.numVoiture = voitures.idVoitures left join services
+    on ent.numService = services.idservice;
 
 -- Q10
 select matricule, count(distinct nom) nombre_personnes from 
